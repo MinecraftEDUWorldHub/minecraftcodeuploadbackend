@@ -1,0 +1,7 @@
+name = "minecraft-world-sync"
+main = "worker.js"
+compatibility_date = "2025-07-18"
+
+[[kv_namespaces]]
+binding = "WORLD_CODES"
+id = "your_kv_namespace_id_here"
