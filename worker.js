@@ -1,5 +1,4 @@
-const AUTH_URL = "https://minecrafteduhubauth.minecraftworld.worker.io/verify";
-
+const AUTH_URL = "https://minecrafteduhubauth.minecraftworld.workers.dev/password/authorize
 async function verifyToken(token) {
   const res = await fetch(AUTH_URL, {
     method: "POST",
