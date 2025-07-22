@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Upload World Code</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #eef;
+      padding: 40px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #38a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="upload-form">
+    <h2>Upload Minecraft World Code</h2>
+
+    <label for="token">Auth Token</label>
+    <input type="text" id="token" required>
+
+    <label for="name">World Name</label>
+    <input type="text" id="name" required>
+
+    <label for="code">World Code</label>
+    <textarea id="code" rows="10" required></textarea>
+
+    <button type="submit">Upload</button>
+
+    <div class="result" id="result"></div>
+  </form>
+
+  <script>
+    document.getElementById('upload-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const token = document.getElementById('token').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const code = document.getElementById('code').value.trim();
+      const result = document.getElementById('result');
+
+      if (!token || !name || !code) {
+        result.textContent = 'Please fill all fields.';
+        return;
+      }
+
+      const response = await fetch('https://backend.minecraftworld.workers.dev/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, code })
+      });
+
+      if (response.ok) {
+        result.textContent = '✅ Upload successful!';
+        result.style.color = 'green';
+      } else {
+        const text = await response.text();
+        result.textContent = '❌ Upload failed: ' + text;
+        result.style.color = 'red';
+      }
+    });
+  </script>
+
+</body>
+</html>
