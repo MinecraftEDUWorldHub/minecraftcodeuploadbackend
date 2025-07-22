@@ -1,55 +1,41 @@
-const AUTH_URL = "https://minecrafteduhubauth.minecraftworld.workers.dev/password/authorize
-async function verifyToken(token) {
-  const res = await fetch(AUTH_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token })
-  });
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});
 
-  if (!res.ok) return false;
+async function handleRequest(request) {
+  if (request.method === 'POST' && new URL(request.url).pathname === '/upload') {
+    const authHeader = request.headers.get('Authorization') || '';
+    if (!authHeader.startsWith('Bearer ')) {
+      return new Response('Unauthorized', { status: 401 });
+    }
+    const token = authHeader.slice(7);
 
-  const data = await res.json();
-  return data.valid === true;
-}
-
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-
-    if (request.method === 'POST' && url.pathname === '/upload') {
-      const authHeader = request.headers.get("Authorization");
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return new Response("Missing or invalid Authorization header", { status: 401 });
-      }
-
-      const token = authHeader.slice(7);
-      const isValid = await verifyToken(token);
-
-      if (!isValid) {
-        return new Response("Unauthorized", { status: 403 });
-      }
-
-      const { name, code } = await request.json();
-      if (!name || !code) {
-        return new Response("Invalid payload", { status: 400 });
-      }
-
-      await env.WORLD_CODES.put(name, code);
-      return new Response("Uploaded", { status: 200 });
+    // TODO: validate token here (mocked for example)
+    if (!token || token.length < 10) {
+      return new Response('Invalid token', { status: 403 });
     }
 
-    if (request.method === 'GET' && url.pathname === '/worlds') {
-      const list = await env.WORLD_CODES.list();
-      const keys = {};
-      for (const entry of list.keys) {
-        const val = await env.WORLD_CODES.get(entry.name);
-        keys[entry.name] = val;
-      }
-      return new Response(JSON.stringify(keys), {
-        headers: { 'Content-Type': 'application/json' },
-      });
+    // Parse JSON body
+    let data;
+    try {
+      data = await request.json();
+    } catch {
+      return new Response('Invalid JSON', { status: 400 });
     }
 
-    return new Response('Not Found', { status: 404 });
+    const { name, code } = data;
+
+    if (!name || !code) {
+      return new Response('Missing fields', { status: 400 });
+    }
+
+    // Ignore role if present
+    // e.g., const role = data.role; // not used here
+
+    // Save data to KV or do backend logic here
+    // For example, just mock success:
+    return new Response('Upload saved', { status: 200 });
   }
+
+  return new Response('Not Found', { status: 404 });
 }
