@@ -3,19 +3,20 @@ addEventListener('fetch', event => {
 });
 
 async function handleRequest(request) {
-  if (request.method === 'POST' && new URL(request.url).pathname === '/upload') {
+  const url = new URL(request.url);
+
+  if (request.method === 'POST' && url.pathname === '/upload') {
     const authHeader = request.headers.get('Authorization') || '';
     if (!authHeader.startsWith('Bearer ')) {
       return new Response('Unauthorized', { status: 401 });
     }
     const token = authHeader.slice(7);
 
-    // TODO: validate token here (mocked for example)
+    // Simple token validation (replace with real validation)
     if (!token || token.length < 10) {
       return new Response('Invalid token', { status: 403 });
     }
 
-    // Parse JSON body
     let data;
     try {
       data = await request.json();
@@ -24,17 +25,16 @@ async function handleRequest(request) {
     }
 
     const { name, code } = data;
-
     if (!name || !code) {
       return new Response('Missing fields', { status: 400 });
     }
 
-    // Ignore role if present
-    // e.g., const role = data.role; // not used here
+    // Ignore role if sent
+    // Here you would save to KV or database, e.g.:
+    // await WORLDS.put(name, code);
 
-    // Save data to KV or do backend logic here
-    // For example, just mock success:
-    return new Response('Upload saved', { status: 200 });
+    // Mock success response
+    return new Response('Upload saved successfully', { status: 200 });
   }
 
   return new Response('Not Found', { status: 404 });
