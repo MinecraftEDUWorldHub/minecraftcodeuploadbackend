@@ -1,4 +1,4 @@
-name = "minecraft-world-sync"
+name = "backend"
 main = "worker.js"
 compatibility_date = "2025-07-18"
 
