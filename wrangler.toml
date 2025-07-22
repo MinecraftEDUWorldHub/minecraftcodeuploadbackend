@@ -1,3 +1,8 @@
+# wrangler.toml (wrangler v3.88.0^)
+[observability.logs]
+enabled = true
+
+
 name = "backend"
 main = "worker.js"
 compatibility_date = "2025-07-18"
@@ -6,9 +11,6 @@ compatibility_date = "2025-07-18"
 binding = "WORLD_CODES"
 id = "ece2fad97734483d8275edda2d001f6d"
 
-# wrangler.toml (wrangler v3.88.0^)
-[observability.logs]
-enabled = true
 
 
 
